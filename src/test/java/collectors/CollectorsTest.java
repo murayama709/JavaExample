@@ -13,28 +13,28 @@ import org.junit.Test;
 public class CollectorsTest extends Base {
 
     @Test
-    public void groupingBy1() {
+    public void groupingBy1() throws Exception {
         Map<Sex, List<Friend>> m = stream()
                 .collect(Collectors.groupingBy(Friend::getSex));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
-    public void groupingBy() {
+    public void groupingBy() throws Exception {
         Map<Sex, List<Friend>> m = stream()
                 .collect(Collectors.groupingBy(Friend::getSex));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
-    public void groupingBy_downstream() {
+    public void groupingBy_downstream() throws Exception {
         Map<Sex, List<Friend>> m = stream()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.toList()));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
-    public void groupingBy_mapping() {
+    public void groupingBy_mapping() throws Exception {
         Map<Sex, List<String>> m = stream()
                 .collect(Collectors.groupingBy(Friend::getSex, 
                         Collectors.mapping(Friend::getName, Collectors.toList())));
