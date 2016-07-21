@@ -24,4 +24,13 @@ public class FriendUtil {
                 new Friend("keita", 47, Sex.MALE, 25.5, sdf.parse("19791231"))
         );
     }
+
+    public static List<Friend> getFewFriends() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        return Arrays.asList(
+                new Friend("keishi", 31, Sex.MALE, 26.0, sdf.parse("19850215")),
+                new Friend("shinya", 30, Sex.MALE, 25.0, sdf.parse("19860830")),
+                new Friend("yuki", 29, Sex.FEMALE, 24.0, sdf.parse("19870215"))
+        );
+    }
 }
