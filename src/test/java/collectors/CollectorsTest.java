@@ -8,6 +8,7 @@ import stream.Base;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -124,5 +125,28 @@ public class CollectorsTest extends Base {
         Friend f = fewfriends().collect(Collectors
                 .maxBy(Comparator.comparingInt(Friend::getAge))).get();
         System.out.println(f);
+    }
+    
+    @Test
+    public void minBy() throws Exception {
+        Double minShoeSize = fewfriends()
+                .map(Friend::getShoeSize)
+                .collect(Collectors.minBy(Comparator.naturalOrder())).get();
+        System.out.println(minShoeSize);
+    }
+
+    @Test
+    public void partitioningBy() throws Exception {
+        Map<Boolean,List<Friend>> m = fewfriends()
+                .collect(Collectors.partitioningBy(f -> f.getSex() == Sex.MALE));
+        m.entrySet().forEach(System.out::println);
+    }
+    
+    @Test
+    public void partitioningBy_downstream() throws Exception {
+        Map<Boolean,Set<Friend>> m = fewfriends()
+                .collect(Collectors.partitioningBy(f -> f.getSex() == Sex.MALE,
+                        Collectors.toSet()));
+        m.entrySet().forEach(System.out::println);
     }
 }
