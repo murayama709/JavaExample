@@ -39,6 +39,16 @@ public class CollectorsTest extends Base {
         System.out.println(avr);
     }
 
+    /**
+     * collectした結果に対してさらにFunction操作が可能
+     */
+    @Test
+    public void collectingAndThen() throws Exception {
+        int avr = fewfriends().collect(Collectors.collectingAndThen(
+                Collectors.averagingLong(Friend::getAge), Double::intValue));
+        System.out.println(avr);
+    }
+
     @Test
     public void groupingBy() throws Exception {
         Map<Sex, List<Friend>> m = friends()
