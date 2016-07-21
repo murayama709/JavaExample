@@ -50,6 +50,17 @@ public class CollectorsTest extends Base {
     }
 
     @Test
+    public void counting() throws Exception {
+        Long cnt = fewfriends().filter(friend -> friend.getSex() == Sex.FEMALE)
+                .collect(Collectors.counting());
+        System.out.println(cnt);
+        // same as
+        cnt = fewfriends().filter(friend -> friend.getSex() == Sex.FEMALE)
+                .collect(Collectors.reducing(0L, e -> 1L, Long::sum));
+    }
+
+    // TODO add more groupingBy and groupingByConcurrent
+    @Test
     public void groupingBy() throws Exception {
         Map<Sex, List<Friend>> m = friends()
                 .collect(Collectors.groupingBy(Friend::getSex));
@@ -68,6 +79,41 @@ public class CollectorsTest extends Base {
         Map<Sex, List<String>> m = friends()
                 .collect(Collectors.groupingBy(Friend::getSex, 
                         Collectors.mapping(Friend::getName, Collectors.toList())));
+        m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void joining() throws Exception {
+        String s = fewfriends().map(Friend::getName)
+                .collect(Collectors.joining());
+        System.out.println(s);
+    }
+
+    @Test
+    public void joining_delimiter() throws Exception {
+        String s = fewfriends().map(Friend::getName)
+                .collect(Collectors.joining(" : "));
+        System.out.println(s);
+    }
+
+    @Test
+    public void joining_delimiter_prefix_suffix() throws Exception {
+        String s = fewfriends().map(Friend::getName)
+                .collect(Collectors.joining(" : ", "my friends [", "]"));
+        System.out.println(s);
+    }
+
+    @Test
+    public void mapping() throws Exception {
+        List<String> names = fewfriends().collect(Collectors.mapping(Friend::getName, Collectors.toList()));
+        names.forEach(System.out::println);
+        names.clear();
+        // same as
+        names = fewfriends().map(Friend::getName).collect(Collectors.toList());
+        names.forEach(System.out::println);
+        // using with groupingBy
+        Map<Sex, List<String>> m = fewfriends()
+                .collect(Collectors.groupingBy(Friend::getSex, Collectors.mapping(Friend::getName, Collectors.toList())));
         m.entrySet().forEach(System.out::println);
     }
 }
