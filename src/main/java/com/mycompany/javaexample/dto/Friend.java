@@ -6,7 +6,6 @@
 package com.mycompany.javaexample.dto;
 
 import com.mycompany.javaexample.type.Sex;
-import java.util.Objects;
 
 /**
  *
