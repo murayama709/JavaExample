@@ -2,6 +2,7 @@ package collectors;
 
 import com.mycompany.javaexample.dto.Friend;
 import com.mycompany.javaexample.type.Sex;
+import java.util.Comparator;
 
 import stream.Base;
 
@@ -57,6 +58,7 @@ public class CollectorsTest extends Base {
         // same as
         cnt = fewfriends().filter(friend -> friend.getSex() == Sex.FEMALE)
                 .collect(Collectors.reducing(0L, e -> 1L, Long::sum));
+        System.out.println(cnt);
     }
 
     // TODO add more groupingBy and groupingByConcurrent
@@ -115,5 +117,12 @@ public class CollectorsTest extends Base {
         Map<Sex, List<String>> m = fewfriends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.mapping(Friend::getName, Collectors.toList())));
         m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void maxBy() throws Exception {
+        Friend f = fewfriends().collect(Collectors
+                .maxBy(Comparator.comparingInt(Friend::getAge))).get();
+        System.out.println(f);
     }
 }
