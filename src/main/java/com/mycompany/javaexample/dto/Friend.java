@@ -1,16 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.javaexample.dto;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.mycompany.javaexample.type.Sex;
 
-/**
- *
- * @author murayamakenichirou
- */
 public class Friend {
     private String name;
     private Integer age;
@@ -41,11 +35,7 @@ public class Friend {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("name : ").append(name).append("; ")
-                .append("age : ").append(age).append("; ")
-                .append("sex : ").append(sex);
-        return sb.toString();
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
-    
+
 }
