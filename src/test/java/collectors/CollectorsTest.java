@@ -2,7 +2,9 @@ package collectors;
 
 import com.mycompany.javaexample.dto.Friend;
 import com.mycompany.javaexample.type.Sex;
+
 import java.util.Comparator;
+import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.IntSummaryStatistics;
 
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -200,7 +203,7 @@ public class CollectorsTest extends Base {
     }
 
     @Test
-    public void summarizingInt_mapper() throws Exception {
+    public void summarizingInt() throws Exception {
         IntSummaryStatistics sum = friends()
                 .collect(Collectors.summarizingInt(Friend::getAge));
         System.out.println(sum);
@@ -208,16 +211,51 @@ public class CollectorsTest extends Base {
     }
 
     @Test
-    public void summarizingLong_mapper() throws Exception {
+    public void summarizingLong() throws Exception {
         LongSummaryStatistics sum = friends()
                 .collect(Collectors.summarizingLong(Friend::getAge));
         System.out.println(sum);
     }
 
     @Test
-    public void summarizingDouble_mapper() throws Exception {
+    public void summarizingDouble() throws Exception {
         DoubleSummaryStatistics sum = friends()
                 .collect(Collectors.summarizingDouble(Friend::getShoeSize));
         System.out.println(sum);
+    }
+
+    @Test
+    public void summingInt() throws Exception {
+        Integer sum = friends()
+                .collect(Collectors.summingInt(Friend::getAge));
+        System.out.println(sum);
+    }
+
+    @Test
+    public void summingLong() throws Exception {
+        Long sum = friends()
+                .collect(Collectors.summingLong(Friend::getAge));
+        System.out.println(sum);
+    }
+
+    @Test
+    public void summingDouble() throws Exception {
+        Double sum = friends()
+                .collect(Collectors.summingDouble(Friend::getShoeSize));
+        System.out.println(sum);
+    }
+
+    @Test
+    public void toCollection() throws Exception {
+        Set<Date> days = friends().map(Friend::getBirthDay)
+                .collect(Collectors.toCollection(TreeSet::new));
+        days.forEach(System.out::println);
+    }
+
+    @Test
+    public void toConcurrentMap_keyMapper_valueMapper() throws Exception {
+        Map<Integer,String> m = friends()
+                .collect(Collectors.toConcurrentMap(Friend::getId, Friend::getName));
+        m.entrySet().forEach(System.out::println);
     }
 }
