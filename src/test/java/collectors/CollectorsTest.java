@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -116,7 +117,7 @@ public class CollectorsTest extends Base {
         // same as
         names = friends().map(Friend::getName).collect(Collectors.toList());
         names.forEach(System.out::println);
-        // using with groupingBy
+        // effective to use as downstream
         Map<Sex, List<String>> m = friends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.mapping(Friend::getName, Collectors.toList())));
         m.entrySet().forEach(System.out::println);
@@ -124,17 +125,21 @@ public class CollectorsTest extends Base {
 
     @Test
     public void maxBy() throws Exception {
-        Friend f = friends().collect(Collectors
-                .maxBy(Comparator.comparingInt(Friend::getAge))).get();
-        System.out.println(f);
+        Optional<Friend> oldestFriend = friends().collect(Collectors
+                .maxBy(Comparator.comparingInt(Friend::getAge)));
+        oldestFriend.ifPresent(System.out::println);
+        // same as
+        oldestFriend = friends().collect(Collectors
+                .reducing(BinaryOperator.minBy(Comparator.comparingInt(Friend::getAge))));
+        oldestFriend.ifPresent(System.out::println);
     }
 
     @Test
     public void minBy() throws Exception {
-        Double minShoeSize = friends()
+        Optional<Double> minShoeSize = friends()
                 .map(Friend::getShoeSize)
-                .collect(Collectors.minBy(Comparator.naturalOrder())).get();
-        System.out.println(minShoeSize);
+                .collect(Collectors.minBy(Comparator.naturalOrder()));
+        minShoeSize.ifPresent(System.out::println);
     }
 
     @Test
@@ -156,8 +161,31 @@ public class CollectorsTest extends Base {
         Optional<Integer> ageSum = friends().map(Friend::getAge)
                 .collect(Collectors.reducing(Integer::max));
         ageSum.ifPresent(System.out::println);
+        // same as
+        ageSum = friends().map(Friend::getAge).reduce(Integer::max);
+        ageSum.ifPresent(System.out::println);
         // almost same as
         OptionalInt ageSumInt = friends().mapToInt(Friend::getAge).max();
         ageSumInt.ifPresent(System.out::println);
+        // effective to use as downstream
+        Comparator<Friend> compareAge = Comparator.comparing(Friend::getShoeSize);
+        Map<Sex, Optional<Friend>> bigfoots = manyFriends().collect(Collectors
+                .groupingBy(Friend::getSex,
+                        Collectors.reducing(BinaryOperator.maxBy(compareAge))));
+        bigfoots.forEach((k, v) -> System.out.println("Sex:" + k + "; ShoeSize:" + v.get().getShoeSize()));
+    }
+
+    @Test
+    public void reducing_identity() throws Exception {
+        Optional<Integer> ageSum = friends().map(Friend::getAge)
+                .collect(Collectors.reducing(Integer::max));
+        ageSum.ifPresent(System.out::println);
+    }
+
+    @Test
+    public void reducing_identity_mapper() throws Exception {
+        Optional<Integer> ageSum = friends().map(Friend::getAge)
+                .collect(Collectors.reducing(Integer::max));
+        ageSum.ifPresent(System.out::println);
     }
 }
