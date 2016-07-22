@@ -3,10 +3,13 @@ package collectors;
 import com.mycompany.javaexample.dto.Friend;
 import com.mycompany.javaexample.type.Sex;
 import java.util.Comparator;
+import java.util.DoubleSummaryStatistics;
+import java.util.IntSummaryStatistics;
 
 import stream.Base;
 
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -157,17 +160,17 @@ public class CollectorsTest extends Base {
     }
 
     @Test
-    public void reducing() throws Exception {
-        Optional<Integer> ageSum = friends().map(Friend::getAge)
+    public void reducing_op() throws Exception {
+        Optional<Integer> oldest = friends().map(Friend::getAge)
                 .collect(Collectors.reducing(Integer::max));
-        ageSum.ifPresent(System.out::println);
+        oldest.ifPresent(System.out::println);
         // same as
-        ageSum = friends().map(Friend::getAge).reduce(Integer::max);
-        ageSum.ifPresent(System.out::println);
+        oldest = friends().map(Friend::getAge).reduce(Integer::max);
+        oldest.ifPresent(System.out::println);
         // almost same as
         OptionalInt ageSumInt = friends().mapToInt(Friend::getAge).max();
         ageSumInt.ifPresent(System.out::println);
-        // effective to use as downstream
+        // effective to use as downstream (it's not good, see reducing_identity_mapper)
         Comparator<Friend> compareAge = Comparator.comparing(Friend::getShoeSize);
         Map<Sex, Optional<Friend>> bigfoots = manyFriends().collect(Collectors
                 .groupingBy(Friend::getSex,
@@ -175,17 +178,46 @@ public class CollectorsTest extends Base {
         bigfoots.forEach((k, v) -> System.out.println("Sex:" + k + "; ShoeSize:" + v.get().getShoeSize()));
     }
 
+    /**
+     * identity : default value
+     */
     @Test
-    public void reducing_identity() throws Exception {
-        Optional<Integer> ageSum = friends().map(Friend::getAge)
-                .collect(Collectors.reducing(Integer::max));
-        ageSum.ifPresent(System.out::println);
+    public void reducing_identity_op() throws Exception {
+        Integer oldest = friends().map(Friend::getAge)
+                .collect(Collectors.reducing(0, Integer::max));
+        System.out.println(oldest);
     }
 
     @Test
-    public void reducing_identity_mapper() throws Exception {
-        Optional<Integer> ageSum = friends().map(Friend::getAge)
-                .collect(Collectors.reducing(Integer::max));
-        ageSum.ifPresent(System.out::println);
+    public void reducing_identity_mapper_op() throws Exception {
+        Integer oldest = friends()
+                .collect(Collectors.reducing(0, Friend::getAge, Integer::max));
+        System.out.println(oldest);
+        // effective to use as downstream
+        Map<Sex, Double> bigfoots = manyFriends().collect(Collectors.groupingBy(Friend::getSex,
+                Collectors.reducing(0D, Friend::getShoeSize, Double::max)));
+        bigfoots.forEach((k, v) -> System.out.println("Sex:" + k + "; ShoeSize:" + v));
+    }
+
+    @Test
+    public void summarizingInt_mapper() throws Exception {
+        IntSummaryStatistics sum = friends()
+                .collect(Collectors.summarizingInt(Friend::getAge));
+        System.out.println(sum);
+        // note : **SummaryStatistics is not thread safe!!
+    }
+
+    @Test
+    public void summarizingLong_mapper() throws Exception {
+        LongSummaryStatistics sum = friends()
+                .collect(Collectors.summarizingLong(Friend::getAge));
+        System.out.println(sum);
+    }
+
+    @Test
+    public void summarizingDouble_mapper() throws Exception {
+        DoubleSummaryStatistics sum = friends()
+                .collect(Collectors.summarizingDouble(Friend::getShoeSize));
+        System.out.println(sum);
     }
 }
