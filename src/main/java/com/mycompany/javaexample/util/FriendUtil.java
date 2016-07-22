@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FriendUtil {
-    public static List<Friend> getFriends() throws ParseException {
+    public static List<Friend> getManyFriends() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         return Arrays.asList(
                 new Friend("keishi", 31, Sex.MALE, 26.5, sdf.parse("19850215")),
@@ -25,7 +25,7 @@ public class FriendUtil {
         );
     }
 
-    public static List<Friend> getFewFriends() throws ParseException {
+    public static List<Friend> getFriends() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         return Arrays.asList(
                 new Friend("keishi", 31, Sex.MALE, 26.0, sdf.parse("19850215")),

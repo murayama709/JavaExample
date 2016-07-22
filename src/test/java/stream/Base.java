@@ -10,8 +10,7 @@ public abstract class Base {
     protected Stream<Friend> friends() throws ParseException {
         return FriendUtil.getFriends().stream();
     }
-
-    protected Stream<Friend> fewfriends() throws ParseException {
-        return FriendUtil.getFewFriends().stream();
+    protected Stream<Friend> manyFriends() throws ParseException {
+        return FriendUtil.getManyFriends().stream();
     }
 }

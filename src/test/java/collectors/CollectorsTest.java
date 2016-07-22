@@ -8,6 +8,8 @@ import stream.Base;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -16,28 +18,28 @@ public class CollectorsTest extends Base {
 
     @Test
     public void averagingDouble() throws Exception {
-        Double avr = fewfriends().collect(Collectors.averagingDouble(Friend::getShoeSize));
+        Double avr = friends().collect(Collectors.averagingDouble(Friend::getShoeSize));
         System.out.println(avr);
         // same as
-        avr = fewfriends().mapToDouble(Friend::getShoeSize).average().orElse(0);
+        avr = friends().mapToDouble(Friend::getShoeSize).average().orElse(0);
         System.out.println(avr);
     }
 
     @Test
     public void averagingInt() throws Exception {
-        Double avr = fewfriends().collect(Collectors.averagingInt(Friend::getAge));
+        Double avr = friends().collect(Collectors.averagingInt(Friend::getAge));
         System.out.println(avr);
        // same as
-        avr = fewfriends().mapToInt(Friend::getAge).average().orElse(0);
+        avr = friends().mapToInt(Friend::getAge).average().orElse(0);
         System.out.println(avr);
     }
 
     @Test
     public void averagingLong() throws Exception {
-        Double avr = fewfriends().collect(Collectors.averagingLong(Friend::getAge));
+        Double avr = friends().collect(Collectors.averagingLong(Friend::getAge));
         System.out.println(avr);
        // same as
-        avr = fewfriends().mapToLong(Friend::getAge).average().orElse(0);
+        avr = friends().mapToLong(Friend::getAge).average().orElse(0);
         System.out.println(avr);
     }
 
@@ -46,18 +48,18 @@ public class CollectorsTest extends Base {
      */
     @Test
     public void collectingAndThen() throws Exception {
-        int avr = fewfriends().collect(Collectors.collectingAndThen(
+        int avr = friends().collect(Collectors.collectingAndThen(
                 Collectors.averagingLong(Friend::getAge), Double::intValue));
         System.out.println(avr);
     }
 
     @Test
     public void counting() throws Exception {
-        Long cnt = fewfriends().filter(friend -> friend.getSex() == Sex.FEMALE)
+        Long cnt = friends().filter(friend -> friend.getSex() == Sex.FEMALE)
                 .collect(Collectors.counting());
         System.out.println(cnt);
         // same as
-        cnt = fewfriends().filter(friend -> friend.getSex() == Sex.FEMALE)
+        cnt = friends().filter(friend -> friend.getSex() == Sex.FEMALE)
                 .collect(Collectors.reducing(0L, e -> 1L, Long::sum));
         System.out.println(cnt);
     }
@@ -65,21 +67,21 @@ public class CollectorsTest extends Base {
     // TODO add more groupingBy and groupingByConcurrent
     @Test
     public void groupingBy() throws Exception {
-        Map<Sex, List<Friend>> m = friends()
+        Map<Sex, List<Friend>> m = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
     public void groupingBy_downstream() throws Exception {
-        Map<Sex, List<Friend>> m = friends()
+        Map<Sex, List<Friend>> m = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.toList()));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
     public void groupingBy_mapping() throws Exception {
-        Map<Sex, List<String>> m = friends()
+        Map<Sex, List<String>> m = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex, 
                         Collectors.mapping(Friend::getName, Collectors.toList())));
         m.entrySet().forEach(System.out::println);
@@ -87,49 +89,49 @@ public class CollectorsTest extends Base {
 
     @Test
     public void joining() throws Exception {
-        String s = fewfriends().map(Friend::getName)
+        String s = friends().map(Friend::getName)
                 .collect(Collectors.joining());
         System.out.println(s);
     }
 
     @Test
     public void joining_delimiter() throws Exception {
-        String s = fewfriends().map(Friend::getName)
+        String s = friends().map(Friend::getName)
                 .collect(Collectors.joining(" : "));
         System.out.println(s);
     }
 
     @Test
     public void joining_delimiter_prefix_suffix() throws Exception {
-        String s = fewfriends().map(Friend::getName)
+        String s = friends().map(Friend::getName)
                 .collect(Collectors.joining(" : ", "my friends [", "]"));
         System.out.println(s);
     }
 
     @Test
     public void mapping() throws Exception {
-        List<String> names = fewfriends().collect(Collectors.mapping(Friend::getName, Collectors.toList()));
+        List<String> names = friends().collect(Collectors.mapping(Friend::getName, Collectors.toList()));
         names.forEach(System.out::println);
         names.clear();
         // same as
-        names = fewfriends().map(Friend::getName).collect(Collectors.toList());
+        names = friends().map(Friend::getName).collect(Collectors.toList());
         names.forEach(System.out::println);
         // using with groupingBy
-        Map<Sex, List<String>> m = fewfriends()
+        Map<Sex, List<String>> m = friends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.mapping(Friend::getName, Collectors.toList())));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
     public void maxBy() throws Exception {
-        Friend f = fewfriends().collect(Collectors
+        Friend f = friends().collect(Collectors
                 .maxBy(Comparator.comparingInt(Friend::getAge))).get();
         System.out.println(f);
     }
-    
+
     @Test
     public void minBy() throws Exception {
-        Double minShoeSize = fewfriends()
+        Double minShoeSize = friends()
                 .map(Friend::getShoeSize)
                 .collect(Collectors.minBy(Comparator.naturalOrder())).get();
         System.out.println(minShoeSize);
@@ -137,16 +139,25 @@ public class CollectorsTest extends Base {
 
     @Test
     public void partitioningBy() throws Exception {
-        Map<Boolean,List<Friend>> m = fewfriends()
-                .collect(Collectors.partitioningBy(f -> f.getSex() == Sex.MALE));
+        Map<Boolean,List<Friend>> m = friends()
+                .collect(Collectors.partitioningBy(f -> f.getAge() > 30));
         m.entrySet().forEach(System.out::println);
     }
-    
+
     @Test
     public void partitioningBy_downstream() throws Exception {
-        Map<Boolean,Set<Friend>> m = fewfriends()
-                .collect(Collectors.partitioningBy(f -> f.getSex() == Sex.MALE,
-                        Collectors.toSet()));
+        Map<Boolean, Set<Integer>> m = friends()
+                .map(Friend::getAge).collect(Collectors.partitioningBy(age -> age > 30, Collectors.toSet()));
         m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void reducing() throws Exception {
+        Optional<Integer> ageSum = friends().map(Friend::getAge)
+                .collect(Collectors.reducing(Integer::max));
+        ageSum.ifPresent(System.out::println);
+        // almost same as
+        OptionalInt ageSumInt = friends().mapToInt(Friend::getAge).max();
+        ageSumInt.ifPresent(System.out::println);
     }
 }
