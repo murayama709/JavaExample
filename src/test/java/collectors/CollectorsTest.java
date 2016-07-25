@@ -257,5 +257,13 @@ public class CollectorsTest extends Base {
         Map<Integer,String> m = friends()
                 .collect(Collectors.toConcurrentMap(Friend::getId, Friend::getName));
         m.entrySet().forEach(System.out::println);
+        // note : if key tyoufuku then reigai hassei
+    }
+
+    @Test
+    public void toConcurrentMap_keyMapper_valueMapper_mergeFunction() throws Exception {
+        Map<Sex,Double> m = friends()
+                .collect(Collectors.toConcurrentMap(Friend::getSex, Friend::getShoeSize, Double::sum));
+        m.entrySet().forEach(System.out::println);
     }
 }
