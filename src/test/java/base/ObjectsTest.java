@@ -7,6 +7,7 @@ package base;
 
 import com.mycompany.javaexample.dto.Friend;
 import com.mycompany.javaexample.type.Sex;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
@@ -51,5 +52,12 @@ public class ObjectsTest {
         System.out.println(Objects.hashCode(a));//1
         System.out.println(Objects.hashCode(b));//1
         System.out.println(Objects.hashCode(c));//2
+    }
+    @Test
+    public void tostring() throws Exception {
+        System.out.println(Objects.toString(null));
+        System.out.println(Objects.toString(a));
+        System.out.println(Objects.toString(new Integer[]{a,b,c}));//ng
+        System.out.println(Arrays.toString(new Integer[]{a,b,c}));//ok
     }
 }
