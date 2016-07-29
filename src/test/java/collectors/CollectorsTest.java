@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -253,11 +254,32 @@ public class CollectorsTest extends Base {
     }
 
     @Test
+    public void toMap_keyMapper_valueMapper() throws Exception {
+        Map<Integer,String> m = friends()
+                .collect(Collectors.toMap(Friend::getId, Friend::getName));
+        m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void toMap_keyMapper_valueMapper_mergeFunction() throws Exception {
+        Map<Sex,Double> m = friends()
+                .collect(Collectors.toMap(Friend::getSex, Friend::getShoeSize, Double::sum));
+        m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void toMap_keyMapper_valueMapper_mergeFunction_mapSupplier() throws Exception {
+        Map<Sex,Double> m = friends()
+                .collect(Collectors.toMap(Friend::getSex,Friend::getShoeSize, Double::sum,
+                        ConcurrentSkipListMap::new));
+        m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
     public void toConcurrentMap_keyMapper_valueMapper() throws Exception {
         Map<Integer,String> m = friends()
                 .collect(Collectors.toConcurrentMap(Friend::getId, Friend::getName));
         m.entrySet().forEach(System.out::println);
-        // note : if key tyoufuku then reigai hassei
     }
 
     @Test
@@ -265,5 +287,25 @@ public class CollectorsTest extends Base {
         Map<Sex,Double> m = friends()
                 .collect(Collectors.toConcurrentMap(Friend::getSex, Friend::getShoeSize, Double::sum));
         m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void toConcurrentMap_keyMapper_valueMapper_mergeFunction_mapSupplier() throws Exception {
+        Map<Sex,Double> m = friends()
+                .collect(Collectors.toConcurrentMap(Friend::getSex,Friend::getShoeSize, Double::sum,
+                        ConcurrentSkipListMap::new));
+        m.entrySet().forEach(System.out::println);
+    }
+
+    @Test
+    public void toList() throws Exception {
+        List<Sex> l = friends().map(Friend::getSex).distinct().collect(Collectors.toList());
+        l.forEach(System.out::println);
+    }
+
+    @Test
+    public void toSet() throws Exception {
+        Set<Sex> l = friends().map(Friend::getSex).collect(Collectors.toSet());
+        l.forEach(System.out::println);
     }
 }
