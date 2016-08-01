@@ -36,12 +36,20 @@ public class CharTest {
 
     @Test
     public void convert() {
+        // to String
         char c = 'A';
         String s = String.valueOf(c);
         System.out.println(s);
         char[] a = new char[] {'A', 'B', 'C'};
         s = String.valueOf(a);
         System.out.println(s);
+        // int <=> char
+        int i = c;
+//        c = i; can not do this
+        c = (char) i;
+        System.out.println(c);
+        char[] cc = Character.toChars(i);
+        System.out.println(cc[0]);
     }
 
     @Test
@@ -49,6 +57,6 @@ public class CharTest {
         String s = "ABC";
         s.chars().forEach(System.out::print);//656667
         System.out.println();
-        s.chars().forEach(c -> System.out.print((char) c));//ABC
+        s.chars().forEach(c -> System.out.print(Character.toChars(c)));//ABC
     }
 }
