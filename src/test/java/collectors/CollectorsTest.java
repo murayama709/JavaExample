@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BinaryOperator;
@@ -72,28 +73,35 @@ public class CollectorsTest extends Base {
         System.out.println(cnt);
     }
 
-    // TODO add more groupingBy and groupingByConcurrent
     @Test
-    public void groupingBy() throws Exception {
+    public void groupingBy_classifier() throws Exception {
         Map<Sex, List<Friend>> m = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex));
         m.entrySet().forEach(System.out::println);
     }
 
     @Test
-    public void groupingBy_downstream() throws Exception {
-        Map<Sex, List<Friend>> m = manyFriends()
+    public void groupingBy_classifier_downstream() throws Exception {
+        Map<Sex, List<Friend>> friendsBy = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.toList()));
-        m.entrySet().forEach(System.out::println);
+        friendsBy.entrySet().forEach(System.out::println);
+        // use with mapping
+        Map<Sex, List<String>> nameBy = manyFriends()
+                .collect(Collectors.groupingBy(Friend::getSex, 
+                        Collectors.mapping(Friend::getName, Collectors.toList())));
+        nameBy.entrySet().forEach(System.out::println);
     }
 
     @Test
-    public void groupingBy_mapping() throws Exception {
-        Map<Sex, List<String>> m = manyFriends()
+    public void groupingBy_classifier_mapFactory_downstream() throws Exception {
+        Map<Sex, List<Friend>> m = manyFriends()
                 .collect(Collectors.groupingBy(Friend::getSex, 
-                        Collectors.mapping(Friend::getName, Collectors.toList())));
+                        TreeMap::new,
+                        Collectors.toList()));
         m.entrySet().forEach(System.out::println);
     }
+
+    // skip groupingByConcurrent tests
 
     @Test
     public void joining() throws Exception {
@@ -124,6 +132,7 @@ public class CollectorsTest extends Base {
         // same as
         names = friends().map(Friend::getName).collect(Collectors.toList());
         names.forEach(System.out::println);
+        names.clear();
         // effective to use as downstream
         Map<Sex, List<String>> m = friends()
                 .collect(Collectors.groupingBy(Friend::getSex, Collectors.mapping(Friend::getName, Collectors.toList())));
